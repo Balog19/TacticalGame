@@ -5,6 +5,9 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float gravity = -9.81f;
+    [SerializeField] private float strafeSpeedMultiplier = 0.6f;
+    [SerializeField] private float backwardSpeedMultiplier = 0.7f;
+    [SerializeField] private Animator animator;
 
     private CharacterController controller;
     private PlayerControls controls;
@@ -15,7 +18,6 @@ public class PlayerController : MonoBehaviour
     {
         controller = GetComponent<CharacterController>();
         controls = new PlayerControls();
-
         controls.Player.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
         controls.Player.Move.canceled += ctx => moveInput = Vector2.zero;
     }
@@ -25,8 +27,17 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        // Animator uses raw input so blend tree plays full-intensity animations
+        animator.SetFloat("SidewaysSpeed", moveInput.x, 0.1f, Time.deltaTime);
+        animator.SetFloat("ForwardSpeed", moveInput.y, 0.1f, Time.deltaTime);
+
+        // Movement uses scaled input
+        Vector2 adjustedInput = moveInput;
+        adjustedInput.x *= strafeSpeedMultiplier;
+        if (adjustedInput.y < 0) adjustedInput.y *= backwardSpeedMultiplier;
+
         // Move relative to where the player is facing
-        Vector3 move = transform.right * moveInput.x + transform.forward * moveInput.y;
+        Vector3 move = transform.right * adjustedInput.x + transform.forward * adjustedInput.y;
         controller.Move(move * moveSpeed * Time.deltaTime);
 
         // Gravity
