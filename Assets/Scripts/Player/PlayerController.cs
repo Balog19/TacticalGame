@@ -5,13 +5,14 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float gravity = -9.81f;
-    [SerializeField] private float strafeSpeedMultiplier = 0.6f;
-    [SerializeField] private float backwardSpeedMultiplier = 0.7f;
+    [SerializeField] private float acceleration = 15f;
+    [SerializeField] private float deceleration = 20f;
     [SerializeField] private Animator animator;
 
     private CharacterController controller;
     private PlayerControls controls;
     private Vector2 moveInput;
+    private Vector2 currentVelocity; // smoothed horizontal velocity (X = strafe, Y = forward)
     private Vector3 velocity;
 
     private void Awake()
@@ -27,17 +28,22 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        // Animator uses raw input so blend tree plays full-intensity animations
-        animator.SetFloat("SidewaysSpeed", moveInput.x, 0.1f, Time.deltaTime);
-        animator.SetFloat("ForwardSpeed", moveInput.y, 0.1f, Time.deltaTime);
+        // Target velocity based on input
+        Vector2 targetVelocity = moveInput;
 
-        // Movement uses scaled input
-        Vector2 adjustedInput = moveInput;
-        adjustedInput.x *= strafeSpeedMultiplier;
-        if (adjustedInput.y < 0) adjustedInput.y *= backwardSpeedMultiplier;
+        // Pick accel or decel rate per axis depending on whether we're speeding up or slowing down
+        float xRate = Mathf.Abs(targetVelocity.x) > Mathf.Abs(currentVelocity.x) ? acceleration : deceleration;
+        float yRate = Mathf.Abs(targetVelocity.y) > Mathf.Abs(currentVelocity.y) ? acceleration : deceleration;
+
+        currentVelocity.x = Mathf.MoveTowards(currentVelocity.x, targetVelocity.x, xRate * Time.deltaTime);
+        currentVelocity.y = Mathf.MoveTowards(currentVelocity.y, targetVelocity.y, yRate * Time.deltaTime);
+
+        // Animator uses the smoothed velocity so animations ease in/out too
+        animator.SetFloat("SidewaysSpeed", currentVelocity.x);
+        animator.SetFloat("ForwardSpeed", currentVelocity.y);
 
         // Move relative to where the player is facing
-        Vector3 move = transform.right * adjustedInput.x + transform.forward * adjustedInput.y;
+        Vector3 move = transform.right * currentVelocity.x + transform.forward * currentVelocity.y;
         controller.Move(move * moveSpeed * Time.deltaTime);
 
         // Gravity
