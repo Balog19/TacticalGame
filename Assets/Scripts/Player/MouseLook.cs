@@ -3,7 +3,8 @@ using UnityEngine;
 public class MouseLook : MonoBehaviour
 {
     [SerializeField] private float mouseSensitivity = 0.1f;
-    [SerializeField] private Transform playerBody; // assign the Player root here
+    [SerializeField] private Transform playerBody;
+    [SerializeField] private RecoilSystem recoilSystem;
 
     private PlayerControls controls;
     private Vector2 lookInput;
@@ -33,9 +34,12 @@ public class MouseLook : MonoBehaviour
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-        // Camera looks up/down
-        transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-        // Player body turns left/right
-        playerBody.Rotate(Vector3.up * mouseX);
+        // Apply recoil on top of mouse aim
+        Vector3 recoilDelta = recoilSystem != null ? recoilSystem.GetCameraRecoilDelta() : Vector3.zero;
+
+        // Camera looks up/down (with recoil pitch added)
+        transform.localRotation = Quaternion.Euler(xRotation + recoilDelta.x, 0f, 0f);
+        // Player body turns left/right (with recoil yaw added)
+        playerBody.Rotate(Vector3.up * (mouseX + recoilDelta.y));
     }
 }
