@@ -8,11 +8,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float acceleration = 15f;
     [SerializeField] private float deceleration = 20f;
     [SerializeField] private Animator animator;
+    [SerializeField] private Transform cameraRig;
 
     private CharacterController controller;
     private PlayerControls controls;
     private Vector2 moveInput;
-    private Vector2 currentVelocity; // smoothed horizontal velocity (X = strafe, Y = forward)
+    private Vector2 currentVelocity;
     private Vector3 velocity;
 
     private void Awake()
@@ -28,25 +29,29 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        // Target velocity based on input
         Vector2 targetVelocity = moveInput;
 
-        // Pick accel or decel rate per axis depending on whether we're speeding up or slowing down
         float xRate = Mathf.Abs(targetVelocity.x) > Mathf.Abs(currentVelocity.x) ? acceleration : deceleration;
         float yRate = Mathf.Abs(targetVelocity.y) > Mathf.Abs(currentVelocity.y) ? acceleration : deceleration;
 
         currentVelocity.x = Mathf.MoveTowards(currentVelocity.x, targetVelocity.x, xRate * Time.deltaTime);
         currentVelocity.y = Mathf.MoveTowards(currentVelocity.y, targetVelocity.y, yRate * Time.deltaTime);
 
-        // Animator uses the smoothed velocity so animations ease in/out too
-        animator.SetFloat("SidewaysSpeed", currentVelocity.x);
-        animator.SetFloat("ForwardSpeed", currentVelocity.y);
+        if (animator != null)
+        {
+            animator.SetFloat("SidewaysSpeed", currentVelocity.x);
+            animator.SetFloat("ForwardSpeed", currentVelocity.y);
+        }
 
-        // Move relative to where the player is facing
-        Vector3 move = transform.right * currentVelocity.x + transform.forward * currentVelocity.y;
+        // Use CameraRig's right/forward for direction, but flatten to horizontal plane
+        Vector3 camRight = cameraRig.right;
+        Vector3 camForward = cameraRig.forward;
+        camRight.y = 0; camRight.Normalize();
+        camForward.y = 0; camForward.Normalize();
+
+        Vector3 move = camRight * currentVelocity.x + camForward * currentVelocity.y;
         controller.Move(move * moveSpeed * Time.deltaTime);
 
-        // Gravity
         if (controller.isGrounded && velocity.y < 0)
             velocity.y = -2f;
 

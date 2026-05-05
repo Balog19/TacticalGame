@@ -10,6 +10,9 @@ public class AimDownSights : MonoBehaviour
 
     private Camera cam;
     private Vector3 hipPosition;
+    private Quaternion hipRotation;
+    private Vector3 adsPosition;       // computed once when ADS starts
+    private Quaternion adsRotation;    // computed once when ADS starts
     private PlayerControls controls;
     private bool isAiming;
 
@@ -17,7 +20,7 @@ public class AimDownSights : MonoBehaviour
     {
         cam = GetComponent<Camera>();
         controls = new PlayerControls();
-        controls.Player.Aim.performed += ctx => isAiming = true;
+        controls.Player.Aim.performed += ctx => StartAiming();
         controls.Player.Aim.canceled += ctx => isAiming = false;
     }
 
@@ -27,25 +30,37 @@ public class AimDownSights : MonoBehaviour
     private void Start()
     {
         hipPosition = gun.localPosition;
+        hipRotation = gun.localRotation;
+    }
+
+    private void StartAiming()
+    {
+        isAiming = true;
+        // Compute ADS position once based on gun's REST pose, not its current state
+        // First, temporarily set gun to its rest pose to compute the offset accurately
+        Vector3 originalPos = gun.localPosition;
+        Quaternion originalRot = gun.localRotation;
+
+        gun.localPosition = hipPosition;
+        gun.localRotation = Quaternion.identity; // ADS rotation is identity
+
+        Vector3 sightInParentSpace = gun.parent.InverseTransformPoint(ironSightsPoint.position);
+        Vector3 cameraInParentSpace = gun.parent.InverseTransformPoint(cam.transform.position);
+        adsPosition = hipPosition + (cameraInParentSpace - sightInParentSpace);
+        adsRotation = Quaternion.identity;
+
+        // Restore current pose (so we don't visually snap)
+        gun.localPosition = originalPos;
+        gun.localRotation = originalRot;
     }
 
     private void LateUpdate()
     {
-        if (isAiming)
-        {
-            // Where the IronSightsPoint currently is, in the gun's parent's local space
-            Vector3 sightInParentSpace = gun.parent.InverseTransformPoint(ironSightsPoint.position);
-            // Where the camera is, in that same space
-            Vector3 cameraInParentSpace = gun.parent.InverseTransformPoint(cam.transform.position);
-            // Shift the gun by the difference so the sight ends up at the camera
-            Vector3 targetLocalPos = gun.localPosition + (cameraInParentSpace - sightInParentSpace);
+        Vector3 targetPos = isAiming ? adsPosition : hipPosition;
+        Quaternion targetRot = isAiming ? adsRotation : hipRotation;
 
-            gun.localPosition = Vector3.Lerp(gun.localPosition, targetLocalPos, adsSpeed * Time.deltaTime);
-        }
-        else
-        {
-            gun.localPosition = Vector3.Lerp(gun.localPosition, hipPosition, adsSpeed * Time.deltaTime);
-        }
+        gun.localPosition = Vector3.Lerp(gun.localPosition, targetPos, adsSpeed * Time.deltaTime);
+        gun.localRotation = Quaternion.Slerp(gun.localRotation, targetRot, adsSpeed * Time.deltaTime);
 
         float targetFOV = isAiming ? adsFOV : hipFOV;
         cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, targetFOV, adsSpeed * Time.deltaTime);

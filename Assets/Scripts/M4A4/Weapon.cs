@@ -2,12 +2,15 @@ using UnityEngine;
 
 public class Weapon : MonoBehaviour
 {
-    [SerializeField] private RecoilSystem recoilSystem;
     [SerializeField] private float fireRate = 10f; // shots per second (full-auto)
 
     private PlayerControls controls;
     private bool isFiring;
     private float nextFireTime;
+    [SerializeField] private Recoil recoilScript;
+
+    [SerializeField] private AudioSource fireAudio;
+    [SerializeField] private WeaponKick weaponKick;
 
     private void Awake()
     {
@@ -23,8 +26,22 @@ public class Weapon : MonoBehaviour
     {
         if (isFiring && Time.time >= nextFireTime)
         {
-            recoilSystem.Fire();
+            Fire();
             nextFireTime = Time.time + (1f / fireRate);
+        }
+    }
+
+    private void Fire()
+    {
+        // Placeholder — add raycast, muzzle flash, sound, etc. here later
+        recoilScript.RecoilFire();
+            if (weaponKick != null)
+        weaponKick.Kick();
+
+        if (fireAudio != null)
+        {
+            fireAudio.pitch = Random.Range(0.85f, 1f); // ±5% pitch variation
+            fireAudio.PlayOneShot(fireAudio.clip);
         }
     }
 }
