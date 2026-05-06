@@ -37,4 +37,6 @@ public class MouseLook : MonoBehaviour
         // CameraRig handles both pitch and yaw
         transform.localRotation = Quaternion.Euler(xRotation, yRotation, 0f);
     }
+
+    
 }

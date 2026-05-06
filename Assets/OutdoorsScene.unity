@@ -1279,7 +1279,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &859707012
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1729,10 +1729,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WeaponKick
   kickableTarget: {fileID: 1334967577}
-  kickAmount: 0.04
-  returnSpeed: 12
-  snappiness: 18
-  sideKickAmount: 0.003
+  kickAmount: 0.025
+  returnSpeed: 10
+  snappiness: 25
+  sideKickAmount: 0
   sideReturnSpeed: 10
   sideSnappiness: 16
 --- !u!1 &1439065969
@@ -1909,11 +1909,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1311778167a1ee41a2603edb518c6dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  recoilX: 2
-  recoilY: 2
-  recoilZ: 0.35
-  snappiness: 8
-  returnSpeed: 4
+  recoilX: 8
+  recoilY: 0.8
+  snappiness: 12
+  returnSpeed: 2
+  recoveryDelay: 0.1
 --- !u!1 &1823688464
 GameObject:
   m_ObjectHideFlags: 0
