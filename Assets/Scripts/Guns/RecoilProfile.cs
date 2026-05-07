@@ -7,7 +7,6 @@ public class RecoilProfile : ScriptableObject
     public Vector2[] recoilPattern;
 
     [Header("Settings")]
-    public float patternScale;
     public float snappiness;
     public float returnSpeed;
     public float fireStopDelay;

@@ -127,6 +127,24 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""LeanLeft"",
+                    ""type"": ""Button"",
+                    ""id"": ""a8318a26-79fe-4a95-9c7c-3545b53798df"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""LeanRight"",
+                    ""type"": ""Button"",
+                    ""id"": ""aef85255-3232-4bf9-a4ed-e4205159a678"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -217,6 +235,28 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""Fire"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7c6d0350-6fcd-4d89-83ec-28183544c240"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LeanLeft"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7ebcf71a-7c2d-4e9f-bac0-f8c6f3a9d38e"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LeanRight"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -229,6 +269,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
         m_Player_Aim = m_Player.FindAction("Aim", throwIfNotFound: true);
         m_Player_Fire = m_Player.FindAction("Fire", throwIfNotFound: true);
+        m_Player_LeanLeft = m_Player.FindAction("LeanLeft", throwIfNotFound: true);
+        m_Player_LeanRight = m_Player.FindAction("LeanRight", throwIfNotFound: true);
     }
 
     ~@PlayerControls()
@@ -313,6 +355,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Look;
     private readonly InputAction m_Player_Aim;
     private readonly InputAction m_Player_Fire;
+    private readonly InputAction m_Player_LeanLeft;
+    private readonly InputAction m_Player_LeanRight;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -340,6 +384,14 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/Fire".
         /// </summary>
         public InputAction @Fire => m_Wrapper.m_Player_Fire;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/LeanLeft".
+        /// </summary>
+        public InputAction @LeanLeft => m_Wrapper.m_Player_LeanLeft;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/LeanRight".
+        /// </summary>
+        public InputAction @LeanRight => m_Wrapper.m_Player_LeanRight;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -378,6 +430,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Fire.started += instance.OnFire;
             @Fire.performed += instance.OnFire;
             @Fire.canceled += instance.OnFire;
+            @LeanLeft.started += instance.OnLeanLeft;
+            @LeanLeft.performed += instance.OnLeanLeft;
+            @LeanLeft.canceled += instance.OnLeanLeft;
+            @LeanRight.started += instance.OnLeanRight;
+            @LeanRight.performed += instance.OnLeanRight;
+            @LeanRight.canceled += instance.OnLeanRight;
         }
 
         /// <summary>
@@ -401,6 +459,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Fire.started -= instance.OnFire;
             @Fire.performed -= instance.OnFire;
             @Fire.canceled -= instance.OnFire;
+            @LeanLeft.started -= instance.OnLeanLeft;
+            @LeanLeft.performed -= instance.OnLeanLeft;
+            @LeanLeft.canceled -= instance.OnLeanLeft;
+            @LeanRight.started -= instance.OnLeanRight;
+            @LeanRight.performed -= instance.OnLeanRight;
+            @LeanRight.canceled -= instance.OnLeanRight;
         }
 
         /// <summary>
@@ -469,5 +533,19 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnFire(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "LeanLeft" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnLeanLeft(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "LeanRight" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnLeanRight(InputAction.CallbackContext context);
     }
 }

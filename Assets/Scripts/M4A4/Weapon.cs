@@ -3,16 +3,18 @@ using UnityEngine;
 public class Weapon : MonoBehaviour
 {
     [Header("Firing")]
-    [SerializeField] private float fireRate = 10f;
+    [SerializeField] private float fireRate = 12.5f;
     [SerializeField] private float fireRange = 100f;
     [SerializeField] private LayerMask hitMask = ~0; // default: everything
 
     [Header("References")]
     [SerializeField] private Recoil recoilScript;
-    [SerializeField] private AudioSource fireAudio;
     [SerializeField] private WeaponKick weaponKick;
+    [SerializeField] private AudioSource fireAudio;
     [SerializeField] private Camera fireCamera;
     [SerializeField] private GameObject decalPrefab;
+    [SerializeField] private ScreenShake screenShake;
+    
 
     [Header("Decal Settings")]
     [SerializeField] private float decalOffset = 0.001f; // tiny offset to prevent z-fighting
@@ -27,10 +29,12 @@ private void Awake()
     controls.Player.Fire.performed += ctx =>
     {
         isFiring = true;
+        if (recoilScript != null) recoilScript.SetFiring(true);
     };
     controls.Player.Fire.canceled += ctx =>
     {
         isFiring = false;
+        if (recoilScript != null) recoilScript.SetFiring(false);
     };
 }
 
@@ -50,6 +54,7 @@ private void Awake()
     {
         if (recoilScript != null) recoilScript.RecoilFire();
         if (weaponKick != null) weaponKick.Kick();
+        if (screenShake != null) screenShake.Shake();
 
         if (fireAudio != null)
         {

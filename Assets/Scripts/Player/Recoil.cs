@@ -2,28 +2,41 @@ using UnityEngine;
 
 public class Recoil : MonoBehaviour
 {
-    [Header("Recoil Per Shot")]
-    [SerializeField] private float recoilX;
-    [SerializeField] private float recoilY;
-    [SerializeField] private float recoilZ;
+    [SerializeField] private RecoilProfile profile;
+    [SerializeField] private MouseLook mouseLook;
 
-    [Header("Settings")]
-    [SerializeField] private float snappiness;
-    [SerializeField] private float returnSpeed;
-
-    private Vector3 currentRotation;
-    private Vector3 targetRotation;
+    private int patternIndex = 0;
+    private bool isFiring;
 
     private void Update()
     {
-        targetRotation = Vector3.Lerp(targetRotation, Vector3.zero, returnSpeed * Time.deltaTime);
-        currentRotation = Vector3.Slerp(currentRotation, targetRotation, snappiness * Time.deltaTime);
-        transform.localRotation = Quaternion.Euler(currentRotation);
+        if (profile == null || mouseLook == null) return;
+
+        // Decay recoil offset on MouseLook when not firing
+        if (!isFiring)
+        {
+            patternIndex = 0;
+            mouseLook.DecayRecoil(profile.returnSpeed);
+        }
     }
 
     public void RecoilFire()
     {
-        Vector3 kick = new Vector3(-recoilX, Random.Range(-recoilY, recoilY), Random.Range(-recoilZ, recoilZ));
-        targetRotation += kick;
+        if (profile == null || profile.recoilPattern == null || profile.recoilPattern.Length == 0) return;
+        if (mouseLook == null) return;
+
+        int idx = Mathf.Min(patternIndex, profile.recoilPattern.Length - 1);
+        Vector2 step = profile.recoilPattern[idx];
+
+        mouseLook.AddRecoil(step.x, step.y);
+        patternIndex++;
+    }
+
+    public void SetFiring(bool firing) => isFiring = firing;
+    public void SetProfile(RecoilProfile newProfile)
+    {
+        profile = newProfile;
+        patternIndex = 0;
+        mouseLook?.ResetRecoil();
     }
 }

@@ -13,28 +13,27 @@ MonoBehaviour:
   m_Name: RecoilProfie_M4A4
   m_EditorClassIdentifier: Assembly-CSharp::RecoilProfile
   recoilPattern:
-  - {x: -0.6, y: 0.05}
-  - {x: -0.6, y: 0.05}
-  - {x: -0.6, y: 0.05}
-  - {x: -0.6, y: 0.05}
-  - {x: -0.6, y: 0.05}
-  - {x: -0.6, y: 0.05}
-  - {x: -0.6, y: 0.05}
-  - {x: -0.6, y: 0.04}
-  - {x: -0.6, y: 0.04}
-  - {x: -0.6, y: 0.04}
-  - {x: -0.6, y: 0.03}
-  - {x: -0.6, y: 0.03}
-  - {x: -0.6, y: 0.02}
-  - {x: -0.6, y: 0.02}
-  - {x: -0.6, y: 0.01}
-  - {x: -0.6, y: -0.1}
-  - {x: -0.6, y: -0.1}
-  - {x: -0.6, y: -0.1}
-  - {x: -0.6, y: 0.1}
-  - {x: -0.6, y: 0.1}
-  - {x: -0.6, y: 0.1}
-  patternScale: 3
-  snappiness: 40
-  returnSpeed: 6
+  - {x: -3, y: 0}
+  - {x: -3, y: 0}
+  - {x: -3, y: 0}
+  - {x: -3, y: 0}
+  - {x: -3, y: 0}
+  - {x: -3, y: 0}
+  - {x: -3, y: 0}
+  - {x: -3, y: 0}
+  - {x: -3, y: 0}
+  - {x: -3, y: 0}
+  - {x: -3, y: 0}
+  - {x: -3, y: 0}
+  - {x: -3, y: 0}
+  - {x: -3, y: 0}
+  - {x: -3, y: 0}
+  - {x: -3, y: 0}
+  - {x: -3, y: 0}
+  - {x: -3, y: 0}
+  - {x: -3, y: 0}
+  - {x: -3, y: 0}
+  - {x: -3, y: 0}
+  snappiness: 100
+  returnSpeed: 3
   fireStopDelay: 0
