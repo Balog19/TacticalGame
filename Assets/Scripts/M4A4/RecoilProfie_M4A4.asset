@@ -35,5 +35,5 @@ MonoBehaviour:
   - {x: -3, y: 0}
   - {x: -3, y: 0}
   snappiness: 100
-  returnSpeed: 3
+  returnSpeed: 7
   fireStopDelay: 0
