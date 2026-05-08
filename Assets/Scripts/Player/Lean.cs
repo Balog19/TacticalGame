@@ -2,14 +2,21 @@ using UnityEngine;
 
 public class Lean : MonoBehaviour
 {
-    [Header("Lean Settings")]
+    [Header("Camera Lean Settings")]
     [SerializeField] private float leanAngle = 15f;
     [SerializeField] private float leanOffset = 0.4f;
     [SerializeField] private float leanSpeed = 8f;
 
+    [Header("Weapon Lean")]
+    [SerializeField] private Transform weaponTransform;
+    [SerializeField] private Transform pivotPoint; // the camera, or a transform at the camera's position
+    [SerializeField] private float weaponLeanAngle = 10f; // how many degrees the weapon rotates around the camera
+
     private PlayerControls controls;
-    private float leanInput;          // -1, 0, or +1
+    private float leanInput;
     private float currentLean;
+    private float lastAppliedWeaponLean;
+
     private Vector3 originalLocalPos;
     private Quaternion originalLocalRot;
 
@@ -31,10 +38,8 @@ public class Lean : MonoBehaviour
 
     private void ToggleLean(float direction)
     {
-        // If already leaning this direction, return to center
         if (Mathf.Approximately(leanInput, direction))
             leanInput = 0f;
-        // Otherwise lean in the new direction (works for first lean OR switching sides)
         else
             leanInput = direction;
     }
@@ -43,8 +48,23 @@ public class Lean : MonoBehaviour
     {
         currentLean = Mathf.Lerp(currentLean, leanInput, leanSpeed * Time.deltaTime);
 
+        // Camera lean (this script's GameObject)
+        Vector3 leanedPos = originalLocalPos + new Vector3(currentLean * leanOffset, 0f, 0f);
         Quaternion leanedRot = originalLocalRot * Quaternion.Euler(0f, 0f, -currentLean * leanAngle);
-
+        transform.localPosition = leanedPos;
         transform.localRotation = leanedRot;
+
+        // Weapon rotation around the pivot point
+        if (weaponTransform != null && pivotPoint != null)
+        {
+            float targetWeaponLean = currentLean * weaponLeanAngle;
+            float delta = targetWeaponLean - lastAppliedWeaponLean;
+
+            // Rotate around the camera/pivot's forward axis
+            weaponTransform.RotateAround(pivotPoint.position, pivotPoint.forward, delta);
+            lastAppliedWeaponLean = targetWeaponLean;
+        }
     }
+
+    public float GetCurrentLean() => currentLean;
 }

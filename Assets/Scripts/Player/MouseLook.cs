@@ -16,6 +16,9 @@ public class MouseLook : MonoBehaviour
     private float currentRecoilPitch = 0f;
     private float currentRecoilYaw = 0f;
 
+    private bool isFiring = false;
+    private float pitchAtFireStart = 0f;
+
     private void Awake()
     {
         controls = new PlayerControls();
@@ -40,21 +43,39 @@ public class MouseLook : MonoBehaviour
         xRotation -= mouseY;
         yRotation += mouseX;
 
-        // Smoothly lerp recoil
         currentRecoilPitch = Mathf.Lerp(currentRecoilPitch, targetRecoilPitch, recoilSmoothness * Time.deltaTime);
         currentRecoilYaw = Mathf.Lerp(currentRecoilYaw, targetRecoilYaw, recoilSmoothness * Time.deltaTime);
 
-        // Clamp the COMBINED display value, not xRotation alone
+        // When not firing, gradually pull xRotation back toward pitchAtFireStart at the same rate as recoil decay
+        if (!isFiring && Mathf.Abs(currentRecoilPitch) > 0.01f)
+        {
+            xRotation = Mathf.Lerp(xRotation, pitchAtFireStart, recoilSmoothness * Time.deltaTime);
+        }
+
         float combinedPitch = xRotation + currentRecoilPitch;
         combinedPitch = Mathf.Clamp(combinedPitch, -90f, 90f);
 
-        // If clamping happened, "spend" the excess against player input so they don't keep building unrecovered overpull
         if (combinedPitch != xRotation + currentRecoilPitch)
         {
             xRotation = combinedPitch - currentRecoilPitch;
         }
 
         transform.localRotation = Quaternion.Euler(combinedPitch, yRotation + currentRecoilYaw, 0f);
+    }
+
+    public void StartFiring()
+    {
+        isFiring = true;
+        pitchAtFireStart = xRotation;
+    }
+
+    public void StopFiring()
+    {
+        if (!isFiring) return;
+        isFiring = false;
+        targetRecoilPitch = 0f;
+        targetRecoilYaw = 0f;
+        // Don't snap xRotation — let recovery handle it gradually
     }
 
     public void AddRecoil(float pitchDelta, float yawDelta)

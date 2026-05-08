@@ -32,7 +32,15 @@ public class Recoil : MonoBehaviour
         patternIndex++;
     }
 
-    public void SetFiring(bool firing) => isFiring = firing;
+    public void SetFiring(bool firing)
+{
+    isFiring = firing;
+    if (mouseLook != null)
+    {
+        if (firing) mouseLook.StartFiring();
+        else mouseLook.StopFiring();
+    }
+}
     public void SetProfile(RecoilProfile newProfile)
     {
         profile = newProfile;

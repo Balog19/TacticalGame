@@ -8,6 +8,7 @@ public class AimDownSights : MonoBehaviour
     [SerializeField] private float adsFOV = 50f;
     [SerializeField] private float hipFOV = 75f;
     [SerializeField] private WeaponKick weaponKick; // optional
+    [SerializeField] private WeaponSway weaponSway; // optional
 
     private Camera cam;
     private Vector3 hipPosition;
@@ -41,6 +42,7 @@ public class AimDownSights : MonoBehaviour
     private void StartAiming()
     {
         isAiming = true;
+        if (weaponSway != null) weaponSway.SnapToOrigin();
         Vector3 originalPos = gun.localPosition;
         Quaternion originalRot = gun.localRotation;
 
@@ -75,4 +77,6 @@ public class AimDownSights : MonoBehaviour
         float targetFOV = isAiming ? adsFOV : hipFOV;
         cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, targetFOV, adsSpeed * Time.deltaTime);
     }
+
+    public bool IsAiming() => isAiming;
 }
