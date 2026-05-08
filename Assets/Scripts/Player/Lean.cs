@@ -7,18 +7,20 @@ public class Lean : MonoBehaviour
     [SerializeField] private float leanOffset = 0.4f;
     [SerializeField] private float leanSpeed = 8f;
 
-    [Header("Weapon Lean")]
+    [Header("Weapon Offset")]
     [SerializeField] private Transform weaponTransform;
-    [SerializeField] private Transform pivotPoint; // the camera, or a transform at the camera's position
-    [SerializeField] private float weaponLeanAngle = 10f; // how many degrees the weapon rotates around the camera
+    [SerializeField] private Vector3 weaponLeanRightOffset = new Vector3(0.05f, 0.03f, 0f);
+    [SerializeField] private Vector3 weaponLeanLeftOffset = new Vector3(-0.05f, 0.03f, 0f);
+    [SerializeField] private float weaponCantAngle = 8f; // gun rolls opposite the lean direction
 
     private PlayerControls controls;
     private float leanInput;
     private float currentLean;
-    private float lastAppliedWeaponLean;
 
     private Vector3 originalLocalPos;
     private Quaternion originalLocalRot;
+    private Vector3 weaponOriginalLocalPos;
+    private Quaternion weaponOriginalLocalRot;
 
     private void Awake()
     {
@@ -34,6 +36,12 @@ public class Lean : MonoBehaviour
     {
         originalLocalPos = transform.localPosition;
         originalLocalRot = transform.localRotation;
+
+        if (weaponTransform != null)
+        {
+            weaponOriginalLocalPos = weaponTransform.localPosition;
+            weaponOriginalLocalRot = weaponTransform.localRotation;
+        }
     }
 
     private void ToggleLean(float direction)
@@ -48,21 +56,27 @@ public class Lean : MonoBehaviour
     {
         currentLean = Mathf.Lerp(currentLean, leanInput, leanSpeed * Time.deltaTime);
 
-        // Camera lean (this script's GameObject)
+        // Camera lean
         Vector3 leanedPos = originalLocalPos + new Vector3(currentLean * leanOffset, 0f, 0f);
         Quaternion leanedRot = originalLocalRot * Quaternion.Euler(0f, 0f, -currentLean * leanAngle);
         transform.localPosition = leanedPos;
         transform.localRotation = leanedRot;
 
-        // Weapon rotation around the pivot point
-        if (weaponTransform != null && pivotPoint != null)
+        // Weapon offset + cant
+        if (weaponTransform != null)
         {
-            float targetWeaponLean = currentLean * weaponLeanAngle;
-            float delta = targetWeaponLean - lastAppliedWeaponLean;
+            Vector3 offset = Vector3.zero;
 
-            // Rotate around the camera/pivot's forward axis
-            weaponTransform.RotateAround(pivotPoint.position, pivotPoint.forward, delta);
-            lastAppliedWeaponLean = targetWeaponLean;
+            if (currentLean < 0f)        // leaning right
+                offset = weaponLeanRightOffset * Mathf.Abs(currentLean);
+            else if (currentLean > 0f)   // leaning left
+                offset = weaponLeanLeftOffset * currentLean;
+
+            weaponTransform.localPosition = weaponOriginalLocalPos + offset;
+
+            // Cant the gun opposite the lean direction
+            float cant = -currentLean * weaponCantAngle;
+            weaponTransform.localRotation = weaponOriginalLocalRot * Quaternion.Euler(0f, 0f, cant);
         }
     }
 

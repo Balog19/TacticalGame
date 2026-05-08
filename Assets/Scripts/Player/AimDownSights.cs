@@ -7,24 +7,28 @@ public class AimDownSights : MonoBehaviour
     [SerializeField] private float adsSpeed = 12f;
     [SerializeField] private float adsFOV = 50f;
     [SerializeField] private float hipFOV = 75f;
-    [SerializeField] private WeaponKick weaponKick; // optional
-    [SerializeField] private WeaponSway weaponSway; // optional
+
+    [SerializeField] private float adsDuration = 0.15f;
+
+    [SerializeField] private WeaponKick weaponKick;
+    private float aimProgress = 0f; // 0 = hip, 1 = ADS
+
+    
 
     private Camera cam;
     private Vector3 hipPosition;
     private Quaternion hipRotation;
-    private Vector3 adsPosition;
-    private Quaternion adsRotation;
-    private Vector3 currentBasePosition;
-    private Quaternion currentBaseRotation;
     private PlayerControls controls;
     private bool isAiming;
+    private bool fullyAimed = false;
+
+    public bool IsAiming() => isAiming;
 
     private void Awake()
     {
         cam = GetComponent<Camera>();
         controls = new PlayerControls();
-        controls.Player.Aim.performed += ctx => StartAiming();
+        controls.Player.Aim.performed += ctx => isAiming = true;
         controls.Player.Aim.canceled += ctx => isAiming = false;
     }
 
@@ -35,48 +39,37 @@ public class AimDownSights : MonoBehaviour
     {
         hipPosition = gun.localPosition;
         hipRotation = gun.localRotation;
-        currentBasePosition = hipPosition;
-        currentBaseRotation = hipRotation;
     }
 
-    private void StartAiming()
-    {
-        isAiming = true;
-        if (weaponSway != null) weaponSway.SnapToOrigin();
-        Vector3 originalPos = gun.localPosition;
-        Quaternion originalRot = gun.localRotation;
+private void LateUpdate()
+{
+    Vector3 originalPos = gun.localPosition;
+    Quaternion originalRot = gun.localRotation;
 
-        gun.localPosition = hipPosition;
-        gun.localRotation = Quaternion.identity;
+    gun.localPosition = hipPosition;
+    gun.localRotation = Quaternion.identity;
 
-        Vector3 sightInParentSpace = gun.parent.InverseTransformPoint(ironSightsPoint.position);
-        Vector3 cameraInParentSpace = gun.parent.InverseTransformPoint(cam.transform.position);
-        adsPosition = hipPosition + (cameraInParentSpace - sightInParentSpace);
-        adsRotation = Quaternion.identity;
+    Vector3 sightInParentSpace = gun.parent.InverseTransformPoint(ironSightsPoint.position);
+    Vector3 cameraInParentSpace = gun.parent.InverseTransformPoint(cam.transform.position);
+    Vector3 adsPosition = hipPosition + (cameraInParentSpace - sightInParentSpace);
 
-        gun.localPosition = originalPos;
-        gun.localRotation = originalRot;
-    }
+    gun.localPosition = originalPos;
+    gun.localRotation = originalRot;
 
-    private void LateUpdate()
-    {
-        Vector3 targetPos = isAiming ? adsPosition : hipPosition;
-        Quaternion targetRot = isAiming ? adsRotation : hipRotation;
+    float direction = isAiming ? 1f : -1f;
+    aimProgress = Mathf.Clamp01(aimProgress + direction * Time.deltaTime / adsDuration);
 
-        // Lerp the BASE position separately from kick
-        currentBasePosition = Vector3.Lerp(currentBasePosition, targetPos, adsSpeed * Time.deltaTime);
-        currentBaseRotation = Quaternion.Slerp(currentBaseRotation, targetRot, adsSpeed * Time.deltaTime);
+    // Compute base position from progress
+    Vector3 basePos = Vector3.Lerp(hipPosition, adsPosition, aimProgress);
+    Quaternion baseRot = Quaternion.Slerp(hipRotation, Quaternion.identity, aimProgress);
 
-        // Apply kick offsets on top of base
-        Vector3 kickPos = weaponKick != null ? weaponKick.GetPositionOffset() : Vector3.zero;
-        Quaternion kickRot = weaponKick != null ? weaponKick.GetRotationOffset() : Quaternion.identity;
+    // Add kick offsets on top
+    Vector3 kickPos = weaponKick != null ? weaponKick.GetPositionOffset() : Vector3.zero;
+    Quaternion kickRot = weaponKick != null ? weaponKick.GetRotationOffset() : Quaternion.identity;
 
-        gun.localPosition = currentBasePosition + kickPos;
-        gun.localRotation = currentBaseRotation * kickRot;
+    gun.localPosition = basePos + kickPos;
+    gun.localRotation = baseRot * kickRot;
 
-        float targetFOV = isAiming ? adsFOV : hipFOV;
-        cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, targetFOV, adsSpeed * Time.deltaTime);
-    }
-
-    public bool IsAiming() => isAiming;
+    cam.fieldOfView = Mathf.Lerp(hipFOV, adsFOV, aimProgress);
+}
 }

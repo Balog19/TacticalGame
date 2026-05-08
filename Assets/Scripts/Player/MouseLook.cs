@@ -3,7 +3,8 @@ using UnityEngine;
 public class MouseLook : MonoBehaviour
 {
     [SerializeField] private float mouseSensitivity = 0.1f;
-    [SerializeField] private float recoilSmoothness = 14f; // higher = snappier, lower = floatier
+    [SerializeField] private float recoilSmoothness; // higher = snappier, lower = floatier
+    [SerializeField] private float returnSmoothness; // higher = snappier, lower = floatier
 
     private PlayerControls controls;
     private Vector2 lookInput;
@@ -43,13 +44,15 @@ public class MouseLook : MonoBehaviour
         xRotation -= mouseY;
         yRotation += mouseX;
 
-        currentRecoilPitch = Mathf.Lerp(currentRecoilPitch, targetRecoilPitch, recoilSmoothness * Time.deltaTime);
-        currentRecoilYaw = Mathf.Lerp(currentRecoilYaw, targetRecoilYaw, recoilSmoothness * Time.deltaTime);
+        // Use different rates depending on whether firing or recovering
+        float pitchRate = isFiring ? recoilSmoothness : returnSmoothness;
 
-        // When not firing, gradually pull xRotation back toward pitchAtFireStart at the same rate as recoil decay
+        currentRecoilPitch = Mathf.Lerp(currentRecoilPitch, targetRecoilPitch, pitchRate * Time.deltaTime);
+        currentRecoilYaw = Mathf.Lerp(currentRecoilYaw, targetRecoilYaw, pitchRate * Time.deltaTime);
+
         if (!isFiring && Mathf.Abs(currentRecoilPitch) > 0.01f)
         {
-            xRotation = Mathf.Lerp(xRotation, pitchAtFireStart, recoilSmoothness * Time.deltaTime);
+            xRotation = Mathf.Lerp(xRotation, pitchAtFireStart, returnSmoothness * Time.deltaTime);
         }
 
         float combinedPitch = xRotation + currentRecoilPitch;
