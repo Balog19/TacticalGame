@@ -594,7 +594,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68f24a85cb1d57a42978a6327a1af300, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ScreenShake
-  positionAmount: 0.1
+  positionAmount: 0
   rotationAmount: 0.4
   decaySpeed: 60
 --- !u!1 &236679954
@@ -696,7 +696,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MouseLook
   mouseSensitivity: 0.07
-  recoilSmoothness: 23
+  recoilSmoothness: 20
   returnSmoothness: 4
 --- !u!114 &246768184
 MonoBehaviour:
@@ -1707,12 +1707,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 796932111}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.23768461, y: -0.7719919, z: -0.50356776, w: 0.30651936}
-  m_LocalPosition: {x: -0.0508, y: 0.2409, z: 0.5922}
+  m_LocalRotation: {x: -0.2376846, y: -0.7719919, z: -0.5035677, w: 0.30651936}
+  m_LocalPosition: {x: -0.050799992, y: 0.2409, z: 0.5922}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 63530478531225698}
+  m_Father: {fileID: 4299671311654609506}
   m_LocalEulerAnglesHint: {x: -67.4, y: -142.512, z: 8.722}
 --- !u!4 &836253440 stripped
 Transform:
@@ -2349,7 +2349,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WeaponKick
   kickableTarget: {fileID: 4299671311654609506}
   rollPivot: {fileID: 1823688467}
-  kickBack: 0.015
+  kickBack: 0.02
   kickRandomness: 0.003
   positionReturnSpeed: 30
   positionSnappiness: 100
@@ -2363,13 +2363,17 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7359575174228704783}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a45d246ca4d4aa6419b9d2c9f97c4740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WeaponSway
   swayClamp: 0.006
-  smoothing: 6
+  swaySmoothing: 3
+  idlePositionAmplitude: 0.005
+  idlePositionFrequency: 1.5
+  idleRotationAmplitude: 0.5
+  idleRotationFrequency: 1.2
   aimDownSights: {fileID: 1823688470}
 --- !u!1 &1439065969
 GameObject:
@@ -2468,10 +2472,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbf53f4d1dac52b45ba037bd3574b52b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  moveSpeed: 5
+  moveSpeed: 4
   gravity: -9.81
-  acceleration: 15
-  deceleration: 20
+  acceleration: 10
+  deceleration: 10
   animator: {fileID: 1840130788}
   cameraRig: {fileID: 246768182}
 --- !u!143 &1439065973
@@ -2863,7 +2867,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AimDownSights
   gun: {fileID: 63530478531225698}
   ironSightsPoint: {fileID: 3815925679760708439}
-  adsSpeed: 8
   adsFOV: 50
   hipFOV: 80
   adsDuration: 0.5
@@ -3881,9 +3884,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 796932112}
   - {fileID: 4299671311654609506}
-  - {fileID: 3815925679760708439}
   m_Father: {fileID: 7290272940793688355}
   m_LocalEulerAnglesHint: {x: -1, y: -2, z: 0}
 --- !u!33 &865917993246485959
@@ -3954,8 +3955,9 @@ GameObject:
   - component: {fileID: 4299671311654609506}
   - component: {fileID: 865917993246485959}
   - component: {fileID: 3161716717214996749}
+  - component: {fileID: 4299671311654609507}
   m_Layer: 7
-  m_Name: M4A4
+  m_Name: WeaponSway
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4158,12 +4160,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7414730000947437691}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.0001359658, y: 0.39092764, z: 0.3703}
+  m_LocalRotation: {x: 0.000000037748947, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.00013596192, y: 0.39092767, z: 0.37030008}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
-  m_Father: {fileID: 63530478531225698}
+  m_Father: {fileID: 4299671311654609506}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4299671311654609506
 Transform:
@@ -4179,8 +4181,29 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 154633852}
+  - {fileID: 3815925679760708439}
+  - {fileID: 796932112}
   m_Father: {fileID: 63530478531225698}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4299671311654609507
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3521903876245305560}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a45d246ca4d4aa6419b9d2c9f97c4740, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponSway
+  swayClamp: 0.006
+  swaySmoothing: 3
+  idlePositionAmplitude: 0.003
+  idlePositionFrequency: 2
+  idleRotationAmplitude: 0.3
+  idleRotationFrequency: 2
+  aimDownSights: {fileID: 1823688470}
 --- !u!4 &7290272940793688355
 Transform:
   m_ObjectHideFlags: 0

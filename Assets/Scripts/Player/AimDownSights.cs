@@ -4,14 +4,13 @@ public class AimDownSights : MonoBehaviour
 {
     [SerializeField] private Transform gun;
     [SerializeField] private Transform ironSightsPoint;
-    [SerializeField] private float adsSpeed = 12f;
     [SerializeField] private float adsFOV = 50f;
     [SerializeField] private float hipFOV = 75f;
 
     [SerializeField] private float adsDuration = 0.15f;
 
     [SerializeField] private WeaponKick weaponKick;
-    private float aimProgress = 0f; // 0 = hip, 1 = ADS
+    private float aimProgress = 0f;
 
     
 
@@ -20,7 +19,6 @@ public class AimDownSights : MonoBehaviour
     private Quaternion hipRotation;
     private PlayerControls controls;
     private bool isAiming;
-    private bool fullyAimed = false;
 
     public bool IsAiming() => isAiming;
 
