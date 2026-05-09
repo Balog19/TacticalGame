@@ -3,19 +3,25 @@ using UnityEngine;
 public class MouseLook : MonoBehaviour
 {
     [SerializeField] private float mouseSensitivity = 0.1f;
-    [SerializeField] private float recoilSmoothness; // higher = snappier, lower = floatier
-    [SerializeField] private float returnSmoothness; // higher = snappier, lower = floatier
+    [SerializeField] private float kickInDuration = 0.05f;  // how long each kick takes to apply (seconds)
+    [SerializeField] private float returnSmoothness = 5f;   // how fast recovery happens after firing stops
 
     private PlayerControls controls;
     private Vector2 lookInput;
     private float xRotation = 0f;
     private float yRotation = 0f;
 
-    // Recoil targets and current values (smoothed)
     private float targetRecoilPitch = 0f;
     private float targetRecoilYaw = 0f;
     private float currentRecoilPitch = 0f;
     private float currentRecoilYaw = 0f;
+
+    // Per-shot kick easing
+    private float kickProgress = 1f;
+    private float kickStartPitch;
+    private float kickStartYaw;
+    private float kickTargetPitch;
+    private float kickTargetYaw;
 
     private bool isFiring = false;
     private float pitchAtFireStart = 0f;
@@ -44,15 +50,30 @@ public class MouseLook : MonoBehaviour
         xRotation -= mouseY;
         yRotation += mouseX;
 
-        // Use different rates depending on whether firing or recovering
-        float pitchRate = isFiring ? recoilSmoothness : returnSmoothness;
-
-        currentRecoilPitch = Mathf.Lerp(currentRecoilPitch, targetRecoilPitch, pitchRate * Time.deltaTime);
-        currentRecoilYaw = Mathf.Lerp(currentRecoilYaw, targetRecoilYaw, pitchRate * Time.deltaTime);
-
-        if (!isFiring && Mathf.Abs(currentRecoilPitch) > 0.01f)
+        if (isFiring)
         {
-            xRotation = Mathf.Lerp(xRotation, pitchAtFireStart, returnSmoothness * Time.deltaTime);
+            // Apply per-shot kick using cubic ease-out (fast at start, eases to target)
+            if (kickProgress < 1f)
+            {
+                kickProgress += Time.deltaTime / kickInDuration;
+                kickProgress = Mathf.Clamp01(kickProgress);
+
+                float eased = 1f - Mathf.Pow(1f - kickProgress, 3f);
+
+                currentRecoilPitch = Mathf.Lerp(kickStartPitch, kickTargetPitch, eased);
+                currentRecoilYaw = Mathf.Lerp(kickStartYaw, kickTargetYaw, eased);
+            }
+        }
+        else
+        {
+            // Recovery — smooth lerp back to zero
+            currentRecoilPitch = Mathf.Lerp(currentRecoilPitch, targetRecoilPitch, returnSmoothness * Time.deltaTime);
+            currentRecoilYaw = Mathf.Lerp(currentRecoilYaw, targetRecoilYaw, returnSmoothness * Time.deltaTime);
+
+            if (Mathf.Abs(currentRecoilPitch) > 0.01f)
+            {
+                xRotation = Mathf.Lerp(xRotation, pitchAtFireStart, returnSmoothness * Time.deltaTime);
+            }
         }
 
         float combinedPitch = xRotation + currentRecoilPitch;
@@ -78,13 +99,20 @@ public class MouseLook : MonoBehaviour
         isFiring = false;
         targetRecoilPitch = 0f;
         targetRecoilYaw = 0f;
-        // Don't snap xRotation — let recovery handle it gradually
+        kickProgress = 1f; // mark kick as done so it doesn't continue easing during recovery
     }
 
     public void AddRecoil(float pitchDelta, float yawDelta)
     {
         targetRecoilPitch += pitchDelta;
         targetRecoilYaw += yawDelta;
+
+        // Start a fresh ease-out kick from current values to the new target
+        kickStartPitch = currentRecoilPitch;
+        kickStartYaw = currentRecoilYaw;
+        kickTargetPitch = targetRecoilPitch;
+        kickTargetYaw = targetRecoilYaw;
+        kickProgress = 0f;
     }
 
     public void DecayRecoil(float decayRate)
@@ -99,5 +127,6 @@ public class MouseLook : MonoBehaviour
         targetRecoilYaw = 0f;
         currentRecoilPitch = 0f;
         currentRecoilYaw = 0f;
+        kickProgress = 1f;
     }
 }

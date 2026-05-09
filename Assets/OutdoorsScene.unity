@@ -589,7 +589,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 232978263}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 68f24a85cb1d57a42978a6327a1af300, type: 3}
   m_Name: 
@@ -695,8 +695,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6fe4759b7387044bb5d997ef4043211, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MouseLook
-  mouseSensitivity: 0.07
-  recoilSmoothness: 20
+  mouseSensitivity: 0.055
+  kickInDuration: 0.12
   returnSmoothness: 4
 --- !u!114 &246768184
 MonoBehaviour:
@@ -2352,29 +2352,10 @@ MonoBehaviour:
   kickBack: 0.02
   kickRandomness: 0.003
   positionReturnSpeed: 30
-  positionSnappiness: 100
+  positionSnappiness: 50
   rollAmount: 0
   rollReturnSpeed: 10
   rollSnappiness: 16
---- !u!114 &1334967581
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7359575174228704783}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a45d246ca4d4aa6419b9d2c9f97c4740, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::WeaponSway
-  swayClamp: 0.006
-  swaySmoothing: 3
-  idlePositionAmplitude: 0.005
-  idlePositionFrequency: 1.5
-  idleRotationAmplitude: 0.5
-  idleRotationFrequency: 1.2
-  aimDownSights: {fileID: 1823688470}
 --- !u!1 &1439065969
 GameObject:
   m_ObjectHideFlags: 0
@@ -4233,7 +4214,6 @@ GameObject:
   - component: {fileID: 1334967578}
   - component: {fileID: 1334967579}
   - component: {fileID: 1334967580}
-  - component: {fileID: 1334967581}
   m_Layer: 7
   m_Name: M4A4
   m_TagString: Untagged

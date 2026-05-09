@@ -28,6 +28,14 @@ public class Recoil : MonoBehaviour
         int idx = Mathf.Min(patternIndex, profile.recoilPattern.Length - 1);
         Vector2 step = profile.recoilPattern[idx];
 
+        // Apply random variation as a percentage of the absolute value
+        float variationFactor = 0.1f;
+        float xVariation = Mathf.Abs(step.x) * variationFactor;
+        float yVariation = Mathf.Abs(step.y) * variationFactor;
+
+        step.x += Random.Range(-xVariation, xVariation);
+        step.y += Random.Range(-yVariation, yVariation);
+
         mouseLook.AddRecoil(step.x, step.y);
         patternIndex++;
     }
